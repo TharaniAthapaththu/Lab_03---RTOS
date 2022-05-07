@@ -9,12 +9,17 @@ static const BaseType_t app_cpu = 1;
 static int shared_var = 0;
 //*****************************************************************************
 
+static SemaphoreHandle_t Mutex;   // Creating a Global Mutex
+
 // Tasks
 // Increment shared variable (the wrong way)
 void incTask(void *parameters) {
   int local_var;
   // Loop forever
   while (1) {
+    
+    if(xSemaphoreTake(Mutex,0)== pdTRUE){  // Take mutex prior to critical section 
+    
     // Roundabout way to do "shared_var++" randomly and poorly
     local_var = shared_var;
     local_var++;
@@ -22,6 +27,10 @@ void incTask(void *parameters) {
     shared_var = local_var;
     // Print out new shared variable
     Serial.println(shared_var);
+
+    xSemaphoreGive(Mutex);    //giving mutex back 
+    }else{
+    }
   }
 }
 
@@ -37,6 +46,7 @@ void setup() {
   Serial.println();
   Serial.println("---FreeRTOS Race Condition Demo---");
 
+  Mutex = xSemaphoreCreateMutex();    //create mutex before beginning of tasks
   // Start task 1
   xTaskCreatePinnedToCore(incTask,
                           "Increment Task 1",
