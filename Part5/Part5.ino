@@ -5,10 +5,10 @@ static const BaseType_t app_cpu = 0;
 static const BaseType_t app_cpu = 1;
 #endif
 
-// Task: Perform some mundane task
+// Task: Perform the task
 void testTask(void *parameter) {
   while (1) {
-    int a = 1;
+    int a = 2;
     int b[100];
 
     // Do something with array so it's not optimized out by the compiler
